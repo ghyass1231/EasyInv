@@ -373,7 +373,7 @@
                 <img src="https://scantech-group.com/wp-content/uploads/2024/10/SG_logo_RVB-01.png" alt="ScanTech Group" class="logo">
                 <span class="app-title">EasyInv</span>
             </div>
-            <button class="fullscreen-btn" id="fullscreenBtn">Mode Kiosque</button>
+            <button class="fullscreen-btn" id="fullscreenBtn">🖥️ Mode Kiosque</button>
         </div>
 
         <div class="content">
@@ -570,13 +570,59 @@
                         // Clear input for next scan
                         input.value = '';
                     } else {
-                        // For location fields, move to next field
+                        // For location fields, move to next field automatically (tabulation)
                         if (index < fields.length - 1) {
                             document.getElementById(fields[index + 1]).focus();
                         }
                     }
                 }
             });
+
+            // Auto-tabulation for location fields when barcode scanner inputs data
+            if (fieldId !== 'product') {
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value.trim();
+                    
+                    // If value looks like a complete barcode (typically 6+ characters), auto-tab
+                    // Most barcode scanners send data quickly followed by Enter
+                    // This detects when a full scan is complete
+                    if (value.length >= 6) {
+                        setTimeout(() => {
+                            // Simulate Enter key to trigger auto-tab
+                            const enterEvent = new KeyboardEvent('keydown', {
+                                key: 'Enter',
+                                code: 'Enter',
+                                keyCode: 13,
+                                which: 13,
+                                bubbles: true
+                            });
+                            e.target.dispatchEvent(enterEvent);
+                        }, 100); // Small delay to ensure scan is complete
+                    }
+                });
+            }
+
+            // For product field, auto-process when scanner sends Enter
+            if (fieldId === 'product') {
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value.trim();
+                    
+                    // Check if value ends with newline or carriage return (scanner behavior)
+                    if (value.length >= 6) {
+                        setTimeout(() => {
+                            // Auto-submit the product scan
+                            const enterEvent = new KeyboardEvent('keydown', {
+                                key: 'Enter',
+                                code: 'Enter',
+                                keyCode: 13,
+                                which: 13,
+                                bubbles: true
+                            });
+                            e.target.dispatchEvent(enterEvent);
+                        }, 100);
+                    }
+                });
+            }
         });
 
         // Handle Save & Move to Next Location button
@@ -740,7 +786,7 @@
                         console.log('Service Worker enregistré:', registration.scope);
                     })
                     .catch((error) => {
-                        console.log(' Échec enregistrement Service Worker:', error);
+                        console.log('Échec enregistrement Service Worker:', error);
                     });
             });
         }
