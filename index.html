@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>EasyInv - Inventaire</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#dc2626">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-title" content="EasyInv">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin: 0;
+            overflow: auto;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        .header {
+            background: white;
+            padding: 12px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            height: 35px;
+            width: auto;
+        }
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #dc2626;
+            letter-spacing: 0.5px;
+        }
+
+        .fullscreen-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+        }
+
+        .fullscreen-btn:hover {
+            background: #b91c1c;
+            transform: scale(1.05);
+        }
+
+        .fullscreen-btn.active {
+            background: #991b1b;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 780px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            color: #991b1b;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #fecaca;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            background: #fef2f2;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #dc2626;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .count-display {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 12px 0;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .count-label {
+            font-size: 11px;
+            opacity: 0.95;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .count-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            margin-bottom: 8px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        }
+
+        .btn-secondary:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .current-location {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            color: #991b1b;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .product-list {
+            background: #f9fafb;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 140px;
+            overflow-y: auto;
+            border: 1px solid #fecaca;
+        }
+
+        .product-list-title {
+            font-weight: 600;
+            color: #991b1b;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            margin: 4px 0;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #dc2626;
+            font-size: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .product-item span:first-child {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .product-item span:last-child {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .records-info {
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 11px;
+            background: rgba(220, 38, 38, 0.9);
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .product-hint {
+            font-size: 10px;
+            color: #991b1b;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        /* Optimized for 800x480 screens */
+        @media (max-width: 800px) and (max-height: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                max-height: 95vh;
+            }
+
+            .header {
+                padding: 8px;
+            }
+
+            .logo {
+                height: 28px;
+            }
+
+            .app-title {
+                font-size: 16px;
+            }
+
+            .content {
+                padding: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 8px;
+            }
+
+            label {
+                font-size: 11px;
+                margin-bottom: 3px;
+            }
+
+            input[type="text"] {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .count-display {
+                padding: 10px;
+                margin: 10px 0;
+            }
+
+            .count-value {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .product-list {
+                max-height: 100px;
+            }
+        }
+
+        /* Touch-friendly */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, input[type="text"] {
+                min-height: 44px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fef2f2;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #dc2626;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://scantech-group.com/wp-content/uploads/2024/10/SG_logo_RVB-01.png" alt="ScanTech Group" class="logo">
+                <span class="app-title">EasyInv</span>
+            </div>
+            <button class="fullscreen-btn" id="fullscreenBtn">Mode Kiosque</button>
+        </div>
+
+        <div class="content">
+            <form id="inventoryForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="site">Site</label>
+                        <input type="text" id="site" name="site" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="floor">Étage</label>
+                        <input type="text" id="floor" name="floor" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="room">Salle</label>
+                        <input type="text" id="room" name="room" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shelf">Étagère</label>
+                        <input type="text" id="shelf" name="shelf" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="product">Code-barres Produit</label>
+                    <input type="text" id="product" name="product" placeholder="Scanner le code-barres">
+                    <div class="product-hint">Scanner les produits en continu - sauvegarde auto</div>
+                </div>
+
+                <div class="count-display">
+                    <div class="count-label">Produits dans cette localisation</div>
+                    <div class="count-value" id="productCount">0</div>
+                </div>
+
+                <div class="current-location" id="currentLocation">
+                    <strong>Localisation actuelle :</strong> Non définie
+                </div>
+
+                <div class="product-list" id="productList" style="display: none;">
+                    <div class="product-list-title">Produits scannés :</div>
+                    <div id="productItems"></div>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="saveBtn">💾 Enregistrer & Suivant</button>
+                <button type="button" class="btn btn-secondary" id="exportBtn">📊 Exporter l'inventaire</button>
+                <div class="records-info" id="recordsInfo">0 enregistrement sauvegardé</div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let inventoryRecords = [];
+        let currentLocation = {
+            site: '',
+            floor: '',
+            room: '',
+            shelf: ''
+        };
+        let productScans = {};
+        let lastScannedProduct = '';
+        const fields = ['site', 'floor', 'room', 'shelf', 'product'];
+        
+        // Update current location display
+        function updateLocationDisplay() {
+            const locationEl = document.getElementById('currentLocation');
+            if (currentLocation.site && currentLocation.floor && currentLocation.room && currentLocation.shelf) {
+                locationEl.innerHTML = `<strong>Localisation actuelle :</strong> ${currentLocation.site} → ${currentLocation.floor} → ${currentLocation.room} → ${currentLocation.shelf}`;
+            } else {
+                locationEl.innerHTML = '<strong>Localisation actuelle :</strong> Non définie';
+            }
+        }
+
+        // Update product list display
+        function updateProductList() {
+            const productListEl = document.getElementById('productList');
+            const productItemsEl = document.getElementById('productItems');
+            const totalCount = Object.values(productScans).reduce((sum, count) => sum + count, 0);
+            
+            document.getElementById('productCount').textContent = totalCount;
+
+            if (Object.keys(productScans).length > 0) {
+                productListEl.style.display = 'block';
+                productItemsEl.innerHTML = '';
+                
+                for (const [barcode, count] of Object.entries(productScans)) {
+                    const item = document.createElement('div');
+                    item.className = 'product-item';
+                    item.innerHTML = `<span>${barcode}</span><span>×${count}</span>`;
+                    productItemsEl.appendChild(item);
+                }
+            } else {
+                productListEl.style.display = 'none';
+            }
+        }
+
+        // Check if location has changed
+        function hasLocationChanged() {
+            const site = document.getElementById('site').value;
+            const floor = document.getElementById('floor').value;
+            const room = document.getElementById('room').value;
+            const shelf = document.getElementById('shelf').value;
+
+            return site !== currentLocation.site || 
+                   floor !== currentLocation.floor || 
+                   room !== currentLocation.room || 
+                   shelf !== currentLocation.shelf;
+        }
+
+        // Save current location to records
+        function saveCurrentLocation() {
+            if (!currentLocation.site || !currentLocation.floor || !currentLocation.room || !currentLocation.shelf) {
+                return;
+            }
+
+            if (Object.keys(productScans).length === 0) {
+                return;
+            }
+
+            // Create a record for each product with its count
+            for (const [barcode, count] of Object.entries(productScans)) {
+                inventoryRecords.push({
+                    timestamp: new Date().toLocaleString('fr-FR'),
+                    site: currentLocation.site,
+                    floor: currentLocation.floor,
+                    room: currentLocation.room,
+                    shelf: currentLocation.shelf,
+                    productBarcode: barcode,
+                    quantity: count
+                });
+            }
+
+            // Update records count
+            const count = inventoryRecords.length;
+            document.getElementById('recordsInfo').textContent = `${count} enregistrement${count > 1 ? 's' : ''} sauvegardé${count > 1 ? 's' : ''}`;
+        }
+
+        // Handle Enter key for navigation and product scanning
+        fields.forEach((fieldId, index) => {
+            const input = document.getElementById(fieldId);
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    
+                    if (fieldId === 'product') {
+                        const barcode = input.value.trim();
+                        
+                        if (barcode === '') {
+                            return;
+                        }
+
+                        // Check if location fields are filled
+                        const site = document.getElementById('site').value;
+                        const floor = document.getElementById('floor').value;
+                        const room = document.getElementById('room').value;
+                        const shelf = document.getElementById('shelf').value;
+
+                        if (!site || !floor || !room || !shelf) {
+                            alert('Veuillez remplir tous les champs de localisation (Site, Étage, Salle, Étagère) avant de scanner les produits');
+                            return;
+                        }
+
+                        // If location has changed, save previous location and reset
+                        if (hasLocationChanged()) {
+                            saveCurrentLocation();
+                            
+                            // Update current location
+                            currentLocation.site = site;
+                            currentLocation.floor = floor;
+                            currentLocation.room = room;
+                            currentLocation.shelf = shelf;
+                            
+                            // Reset product scans
+                            productScans = {};
+                            
+                            updateLocationDisplay();
+                        }
+
+                        // Add or increment product count
+                        if (productScans[barcode]) {
+                            productScans[barcode]++;
+                        } else {
+                            productScans[barcode] = 1;
+                        }
+
+                        lastScannedProduct = barcode;
+                        updateProductList();
+                        
+                        // Clear input for next scan
+                        input.value = '';
+                    } else {
+                        // For location fields, move to next field
+                        if (index < fields.length - 1) {
+                            document.getElementById(fields[index + 1]).focus();
+                        }
+                    }
+                }
+            });
+        });
+
+        // Handle Save & Move to Next Location button
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const site = document.getElementById('site').value;
+            const floor = document.getElementById('floor').value;
+            const room = document.getElementById('room').value;
+            const shelf = document.getElementById('shelf').value;
+
+            // Validate that location fields are filled
+            if (!site || !floor || !room || !shelf) {
+                alert('Veuillez remplir tous les champs de localisation (Site, Étage, Salle, Étagère)');
+                return;
+            }
+
+            // Update current location if changed
+            if (hasLocationChanged()) {
+                saveCurrentLocation();
+                
+                currentLocation.site = site;
+                currentLocation.floor = floor;
+                currentLocation.room = room;
+                currentLocation.shelf = shelf;
+            }
+
+            // Save current location
+            saveCurrentLocation();
+
+            const totalProducts = Object.values(productScans).reduce((sum, count) => sum + count, 0);
+            
+            // Show confirmation
+            alert(`Localisation enregistrée !\n\n${site} → ${floor} → ${room} → ${shelf}\n\nTotal produits scannés : ${totalProducts}`);
+            
+            // Reset for next location
+            document.getElementById('inventoryForm').reset();
+            productScans = {};
+            currentLocation = { site: '', floor: '', room: '', shelf: '' };
+            lastScannedProduct = '';
+            
+            updateLocationDisplay();
+            updateProductList();
+            document.getElementById('productCount').textContent = '0';
+            document.getElementById('site').focus();
+        });
+
+        // Handle Export button
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            if (inventoryRecords.length === 0) {
+                alert('Aucun enregistrement à exporter. Veuillez ajouter des enregistrements d\'inventaire d\'abord.');
+                return;
+            }
+
+            // Create CSV content
+            const headers = ['Horodatage', 'Site', 'Étage', 'Salle', 'Étagère', 'Code-barres Produit', 'Quantité'];
+            const csvRows = [headers.join(',')];
+
+            inventoryRecords.forEach(record => {
+                const row = [
+                    `"${record.timestamp}"`,
+                    `"${record.site}"`,
+                    `"${record.floor}"`,
+                    `"${record.room}"`,
+                    `"${record.shelf}"`,
+                    `"${record.productBarcode}"`,
+                    record.quantity
+                ];
+                csvRows.push(row.join(','));
+            });
+
+            const csvContent = csvRows.join('\n');
+
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            // Generate filename with current date
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `inventaire_export_${date}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert(`${inventoryRecords.length} enregistrement${inventoryRecords.length > 1 ? 's' : ''} exporté${inventoryRecords.length > 1 ? 's' : ''} vers ${filename}`);
+        });
+
+        // Focus on first field when page loads
+        document.getElementById('site').focus();
+
+        // Fullscreen/Kiosk mode functionality
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    elem.mozRequestFullScreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+                
+                fullscreenBtn.textContent = 'Quitter Mode Kiosque';
+                fullscreenBtn.classList.add('active');
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                
+                fullscreenBtn.textContent = 'Mode Kiosque';
+                fullscreenBtn.classList.remove('active');
+            }
+        });
+
+        // Update button text if fullscreen is exited
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+        document.addEventListener('msfullscreenchange', updateFullscreenButton);
+
+        function updateFullscreenButton() {
+            const isFullscreen = document.fullscreenElement || 
+                                document.webkitFullscreenElement || 
+                                document.mozFullScreenElement || 
+                                document.msFullscreenElement;
+            
+            if (!isFullscreen) {
+                fullscreenBtn.textContent = 'Mode Kiosque';
+                fullscreenBtn.classList.remove('active');
+            }
+        }
+
+        // Prevent zoom on double-tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker enregistré:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log(' Échec enregistrement Service Worker:', error);
+                    });
+            });
+        }
+
+        // Prompt pour installer la PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Vous pouvez afficher un bouton d'installation personnalisé ici
+            console.log('PWA peut être installée');
+        });
+
+        // Détection de l'installation
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installée avec succès');
+            deferredPrompt = null;
+        });
+    </script>
+</body>
+</html>
