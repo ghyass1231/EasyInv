@@ -1,9 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Sample Data & Barcodes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>EasyInv - Inventaire</title>
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#dc2626">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-title" content="EasyInv">
+    
     <style>
         * {
             margin: 0;
@@ -13,507 +23,742 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            padding: 30px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            margin: 0;
+            overflow: auto;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
+        html {
+            height: -webkit-fill-available;
         }
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-
-        .section {
+        .header {
             background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 12px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .section-title {
-            color: #34495e;
-            font-size: 20px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #3498db;
+        .logo-container {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .barcode-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+        .logo {
+            height: 35px;
+            width: auto;
         }
 
-        .barcode-card {
-            border: 2px solid #3498db;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            background: white;
-            transition: all 0.3s ease;
+        .app-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #dc2626;
+            letter-spacing: 0.5px;
         }
 
-        .barcode-card:hover {
-            border-color: #2980b9;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .barcode-card.site { border-color: #e74c3c; }
-        .barcode-card.floor { border-color: #f39c12; }
-        .barcode-card.room { border-color: #2ecc71; }
-        .barcode-card.shelf { border-color: #9b59b6; }
-        .barcode-card.product { border-color: #1abc9c; }
-
-        .barcode-label {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .barcode-type {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
+        .fullscreen-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
             font-size: 11px;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
         }
 
-        .type-site { background: #e74c3c; }
-        .type-floor { background: #f39c12; }
-        .type-room { background: #2ecc71; }
-        .type-shelf { background: #9b59b6; }
-        .type-product { background: #1abc9c; }
+        .fullscreen-btn:hover {
+            background: #b91c1c;
+            transform: scale(1.05);
+        }
 
-        .barcode-image {
+        .fullscreen-btn.active {
+            background: #991b1b;
+        }
+
+        .container {
             background: white;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 4px;
-        }
-
-        .barcode-code {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #34495e;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .data-table {
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+            max-width: 780px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .data-table th {
-            background: #3498db;
+        .content {
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            color: #991b1b;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #fecaca;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            background: #fef2f2;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #dc2626;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .count-display {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
             color: white;
             padding: 12px;
-            text-align: left;
-            font-weight: 600;
-        }
-
-        .data-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #ecf0f1;
-        }
-
-        .data-table tr:hover {
-            background: #f8f9fa;
-        }
-
-        .data-table tr:nth-child(even) {
-            background: #f9fafb;
-        }
-
-        .btn-container {
+            border-radius: 8px;
             text-align: center;
-            margin-top: 30px;
+            margin: 12px 0;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .count-label {
+            font-size: 11px;
+            opacity: 0.95;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .count-value {
+            font-size: 28px;
+            font-weight: bold;
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 100%;
+            padding: 12px;
             color: white;
             border: none;
-            padding: 15px 40px;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease;
-            margin: 5px;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            margin-bottom: 8px;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
         }
 
-        canvas {
-            max-width: 100%;
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
         }
 
-        .info-badge {
-            display: inline-block;
-            background: #3498db;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
+        .btn-secondary:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .current-location {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            color: #991b1b;
             font-size: 12px;
+            font-weight: 500;
+        }
+
+        .product-list {
+            background: #f9fafb;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 140px;
+            overflow-y: auto;
+            border: 1px solid #fecaca;
+        }
+
+        .product-list-title {
             font-weight: 600;
+            color: #991b1b;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .category-icon {
-            font-size: 24px;
-        }
-
-        .note {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 20px 0;
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            margin: 4px 0;
+            background: white;
             border-radius: 4px;
-            color: #856404;
+            border-left: 3px solid #dc2626;
+            font-size: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .product-item span:first-child {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .product-item span:last-child {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .records-info {
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 11px;
+            background: rgba(220, 38, 38, 0.9);
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .product-hint {
+            font-size: 10px;
+            color: #991b1b;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        /* Optimized for 800x480 screens */
+        @media (max-width: 800px) and (max-height: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                max-height: 95vh;
+            }
+
+            .header {
+                padding: 8px;
+            }
+
+            .logo {
+                height: 28px;
+            }
+
+            .app-title {
+                font-size: 16px;
+            }
+
+            .content {
+                padding: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 8px;
+            }
+
+            label {
+                font-size: 11px;
+                margin-bottom: 3px;
+            }
+
+            input[type="text"] {
+                padding: 8px;
+                font-size: 13px;
+            }
+
+            .count-display {
+                padding: 10px;
+                margin: 10px 0;
+            }
+
+            .count-value {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .product-list {
+                max-height: 100px;
+            }
+        }
+
+        /* Touch-friendly */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, input[type="text"] {
+                min-height: 44px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #fef2f2;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #dc2626;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b91c1c;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📦 Inventory Demo Sample Data</h1>
-        <p class="subtitle">Independent barcodes for each category - Sites, Floors, Rooms, Shelves & Products</p>
-
-        <div class="note">
-            <strong>ℹ️ Barcode Structure:</strong> Each category (Site, Floor, Room, Shelf, Product) has its own independent barcode. 
-            During inventory, scan the location barcodes first, then scan product barcodes as you count them.
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://scantech-group.com/wp-content/uploads/2024/10/SG_logo_RVB-01.png" alt="ScanTech Group" class="logo">
+                <span class="app-title">EasyInv</span>
+            </div>
+            <button class="fullscreen-btn" id="fullscreenBtn">Mode Kiosque</button>
         </div>
 
-        <!-- Site Barcodes -->
-        <div class="section">
-            <h2 class="section-title">
-                <span class="category-icon">🏢</span>
-                Site Barcodes
-                <span class="info-badge">4 Sites</span>
-            </h2>
-            <div class="barcode-grid" id="siteBarcodes"></div>
-        </div>
+        <div class="content">
+            <form id="inventoryForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="site">Site</label>
+                        <input type="text" id="site" name="site" required>
+                    </div>
 
-        <!-- Floor Barcodes -->
-        <div class="section">
-            <h2 class="section-title">
-                <span class="category-icon">🏗️</span>
-                Floor Barcodes
-                <span class="info-badge">6 Floors</span>
-            </h2>
-            <div class="barcode-grid" id="floorBarcodes"></div>
-        </div>
+                    <div class="form-group">
+                        <label for="floor">Étage</label>
+                        <input type="text" id="floor" name="floor" required>
+                    </div>
+                </div>
 
-        <!-- Room Barcodes -->
-        <div class="section">
-            <h2 class="section-title">
-                <span class="category-icon">🚪</span>
-                Room Barcodes
-                <span class="info-badge">10 Rooms</span>
-            </h2>
-            <div class="barcode-grid" id="roomBarcodes"></div>
-        </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="room">Salle</label>
+                        <input type="text" id="room" name="room" required>
+                    </div>
 
-        <!-- Shelf Barcodes -->
-        <div class="section">
-            <h2 class="section-title">
-                <span class="category-icon">📚</span>
-                Shelf Barcodes
-                <span class="info-badge">15 Shelves</span>
-            </h2>
-            <div class="barcode-grid" id="shelfBarcodes"></div>
-        </div>
+                    <div class="form-group">
+                        <label for="shelf">Étagère</label>
+                        <input type="text" id="shelf" name="shelf" required>
+                    </div>
+                </div>
 
-        <!-- Product Barcodes -->
-        <div class="section">
-            <h2 class="section-title">
-                <span class="category-icon">📦</span>
-                Product Barcodes
-                <span class="info-badge">20 Products</span>
-            </h2>
-            <div class="barcode-grid" id="productBarcodes"></div>
-        </div>
+                <div class="form-group">
+                    <label for="product">Code-barres Produit</label>
+                    <input type="text" id="product" name="product" placeholder="Scanner le code-barres">
+                    <div class="product-hint">Scanner les produits en continu - sauvegarde auto</div>
+                </div>
 
-        <!-- Sample Inventory Scenarios -->
-        <div class="section">
-            <h2 class="section-title">
-                <span class="category-icon">📊</span>
-                Sample Inventory Scenarios
-            </h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Site</th>
-                        <th>Floor</th>
-                        <th>Room</th>
-                        <th>Shelf</th>
-                        <th>Sample Products Found</th>
-                        <th>Count</th>
-                    </tr>
-                </thead>
-                <tbody id="scenarioTable"></tbody>
-            </table>
-        </div>
+                <div class="count-display">
+                    <div class="count-label">Produits dans cette localisation</div>
+                    <div class="count-value" id="productCount">0</div>
+                </div>
 
-        <div class="btn-container">
-            <button class="btn" onclick="printBarcodes()">🖨️ Print All Barcodes</button>
-            <button class="btn btn-secondary" onclick="downloadCSV()">📥 Download Complete Dataset</button>
+                <div class="current-location" id="currentLocation">
+                    <strong>Localisation actuelle :</strong> Non définie
+                </div>
+
+                <div class="product-list" id="productList" style="display: none;">
+                    <div class="product-list-title">Produits scannés :</div>
+                    <div id="productItems"></div>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="saveBtn">💾 Enregistrer & Suivant</button>
+                <button type="button" class="btn btn-secondary" id="exportBtn">📊 Exporter l'inventaire</button>
+                <div class="records-info" id="recordsInfo">0 enregistrement sauvegardé</div>
+            </form>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
     <script>
-        // Independent barcode data for each category
-        const sites = [
-            { id: "SITE-001", name: "Main Warehouse", code: "SITE001" },
-            { id: "SITE-002", name: "Distribution Center", code: "SITE002" },
-            { id: "SITE-003", name: "Retail Store North", code: "SITE003" },
-            { id: "SITE-004", name: "Cold Storage Facility", code: "SITE004" }
-        ];
+        let inventoryRecords = [];
+        let currentLocation = {
+            site: '',
+            floor: '',
+            room: '',
+            shelf: ''
+        };
+        let productScans = {};
+        let lastScannedProduct = '';
+        const fields = ['site', 'floor', 'room', 'shelf', 'product'];
+        
+        // Update current location display
+        function updateLocationDisplay() {
+            const locationEl = document.getElementById('currentLocation');
+            if (currentLocation.site && currentLocation.floor && currentLocation.room && currentLocation.shelf) {
+                locationEl.innerHTML = `<strong>Localisation actuelle :</strong> ${currentLocation.site} → ${currentLocation.floor} → ${currentLocation.room} → ${currentLocation.shelf}`;
+            } else {
+                locationEl.innerHTML = '<strong>Localisation actuelle :</strong> Non définie';
+            }
+        }
 
-        const floors = [
-            { id: "FLR-001", name: "Ground Floor", code: "FLR001" },
-            { id: "FLR-002", name: "First Floor", code: "FLR002" },
-            { id: "FLR-003", name: "Second Floor", code: "FLR003" },
-            { id: "FLR-004", name: "Basement", code: "FLR004" },
-            { id: "FLR-005", name: "Mezzanine", code: "FLR005" },
-            { id: "FLR-006", name: "Rooftop Storage", code: "FLR006" }
-        ];
+        // Update product list display
+        function updateProductList() {
+            const productListEl = document.getElementById('productList');
+            const productItemsEl = document.getElementById('productItems');
+            const totalCount = Object.values(productScans).reduce((sum, count) => sum + count, 0);
+            
+            document.getElementById('productCount').textContent = totalCount;
 
-        const rooms = [
-            { id: "RM-101", name: "Storage Room A", code: "RM101" },
-            { id: "RM-102", name: "Storage Room B", code: "RM102" },
-            { id: "RM-201", name: "Loading Bay 1", code: "RM201" },
-            { id: "RM-202", name: "Loading Bay 2", code: "RM202" },
-            { id: "RM-301", name: "Packaging Area", code: "RM301" },
-            { id: "RM-401", name: "Quality Control", code: "RM401" },
-            { id: "RM-501", name: "Receiving Dock", code: "RM501" },
-            { id: "RM-601", name: "Stockroom", code: "RM601" },
-            { id: "RM-701", name: "Freezer Unit 1", code: "RM701" },
-            { id: "RM-801", name: "Backroom", code: "RM801" }
-        ];
-
-        const shelves = [
-            { id: "SHF-A01", name: "Shelf A1", code: "SHFA01" },
-            { id: "SHF-A02", name: "Shelf A2", code: "SHFA02" },
-            { id: "SHF-B01", name: "Shelf B1", code: "SHFB01" },
-            { id: "SHF-B02", name: "Shelf B2", code: "SHFB02" },
-            { id: "SHF-C01", name: "Shelf C1", code: "SHFC01" },
-            { id: "SHF-C02", name: "Shelf C2", code: "SHFC02" },
-            { id: "SHF-D01", name: "Shelf D1", code: "SHFD01" },
-            { id: "SHF-D02", name: "Shelf D2", code: "SHFD02" },
-            { id: "SHF-E01", name: "Shelf E1", code: "SHFE01" },
-            { id: "SHF-E02", name: "Shelf E2", code: "SHFE02" },
-            { id: "SHF-F01", name: "Shelf F1", code: "SHFF01" },
-            { id: "SHF-F02", name: "Shelf F2", code: "SHFF02" },
-            { id: "SHF-G01", name: "Shelf G1", code: "SHFG01" },
-            { id: "SHF-H01", name: "Shelf H1", code: "SHFH01" },
-            { id: "SHF-J01", name: "Shelf J1", code: "SHFJ01" }
-        ];
-
-        const products = [
-            { id: "PRD-1001", name: "Laptop Dell XPS 15", code: "PRD1001" },
-            { id: "PRD-1002", name: "Office Chair Executive", code: "PRD1002" },
-            { id: "PRD-1003", name: "Printer HP LaserJet Pro", code: "PRD1003" },
-            { id: "PRD-1004", name: "Desk Lamp LED", code: "PRD1004" },
-            { id: "PRD-1005", name: "Notebook A4 100-Pack", code: "PRD1005" },
-            { id: "PRD-1006", name: "USB Flash Drive 64GB", code: "PRD1006" },
-            { id: "PRD-1007", name: "Whiteboard 4x6ft", code: "PRD1007" },
-            { id: "PRD-1008", name: "Headphones Wireless", code: "PRD1008" },
-            { id: "PRD-1009", name: "Monitor 27-inch 4K", code: "PRD1009" },
-            { id: "PRD-1010", name: "Keyboard Mechanical RGB", code: "PRD1010" },
-            { id: "PRD-1011", name: "Mouse Wireless Gaming", code: "PRD1011" },
-            { id: "PRD-1012", name: "Desk Organizer Set", code: "PRD1012" },
-            { id: "PRD-1013", name: "Paper Shredder Heavy Duty", code: "PRD1013" },
-            { id: "PRD-1014", name: "Filing Cabinet 4-Drawer", code: "PRD1014" },
-            { id: "PRD-1015", name: "Surge Protector 8-Outlet", code: "PRD1015" },
-            { id: "PRD-1016", name: "External Hard Drive 2TB", code: "PRD1016" },
-            { id: "PRD-1017", name: "Webcam HD 1080p", code: "PRD1017" },
-            { id: "PRD-1018", name: "Cable Management Kit", code: "PRD1018" },
-            { id: "PRD-1019", name: "Stapler Heavy Duty", code: "PRD1019" },
-            { id: "PRD-1020", name: "Calculator Scientific", code: "PRD1020" }
-        ];
-
-        // Sample scenarios showing products at different locations
-        const scenarios = [
-            { site: "Main Warehouse", floor: "Ground Floor", room: "Storage Room A", shelf: "Shelf A1", products: "PRD1001, PRD1009, PRD1010", count: 12 },
-            { site: "Main Warehouse", floor: "Ground Floor", room: "Storage Room A", shelf: "Shelf A2", products: "PRD1003, PRD1013, PRD1015", count: 8 },
-            { site: "Main Warehouse", floor: "First Floor", room: "Storage Room B", shelf: "Shelf B1", products: "PRD1002, PRD1007, PRD1014", count: 15 },
-            { site: "Distribution Center", floor: "Ground Floor", room: "Loading Bay 1", shelf: "Shelf C1", products: "PRD1006, PRD1011, PRD1016", count: 24 },
-            { site: "Distribution Center", floor: "Mezzanine", room: "Packaging Area", shelf: "Shelf D1", products: "PRD1005, PRD1012, PRD1018", count: 45 },
-            { site: "Retail Store North", floor: "Ground Floor", room: "Stockroom", shelf: "Shelf E1", products: "PRD1004, PRD1008, PRD1017", count: 18 },
-            { site: "Retail Store North", floor: "Ground Floor", room: "Backroom", shelf: "Shelf F1", products: "PRD1019, PRD1020", count: 32 },
-            { site: "Cold Storage Facility", floor: "Basement", room: "Freezer Unit 1", shelf: "Shelf G1", products: "PRD1001, PRD1003", count: 6 }
-        ];
-
-        // Generate barcodes for a category
-        function generateCategoryBarcodes(items, containerId, categoryClass, typeClass) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-
-            items.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = `barcode-card ${categoryClass}`;
+            if (Object.keys(productScans).length > 0) {
+                productListEl.style.display = 'block';
+                productItemsEl.innerHTML = '';
                 
-                const type = document.createElement('div');
-                type.className = `barcode-type ${typeClass}`;
-                type.textContent = categoryClass.toUpperCase();
-                
-                const label = document.createElement('div');
-                label.className = 'barcode-label';
-                label.textContent = item.name;
-                
-                const canvasContainer = document.createElement('div');
-                canvasContainer.className = 'barcode-image';
-                
-                const canvas = document.createElement('canvas');
-                canvas.id = `${containerId}-${index}`;
-                
-                const code = document.createElement('div');
-                code.className = 'barcode-code';
-                code.textContent = item.code;
-                
-                card.appendChild(type);
-                card.appendChild(label);
-                canvasContainer.appendChild(canvas);
-                card.appendChild(canvasContainer);
-                card.appendChild(code);
-                container.appendChild(card);
+                for (const [barcode, count] of Object.entries(productScans)) {
+                    const item = document.createElement('div');
+                    item.className = 'product-item';
+                    item.innerHTML = `<span>${barcode}</span><span>×${count}</span>`;
+                    productItemsEl.appendChild(item);
+                }
+            } else {
+                productListEl.style.display = 'none';
+            }
+        }
 
-                // Generate barcode
-                try {
-                    JsBarcode(`#${containerId}-${index}`, item.code, {
-                        format: "CODE128",
-                        width: 2,
-                        height: 50,
-                        displayValue: false,
-                        margin: 5
-                    });
-                } catch (e) {
-                    console.error('Barcode generation error:', e);
+        // Check if location has changed
+        function hasLocationChanged() {
+            const site = document.getElementById('site').value;
+            const floor = document.getElementById('floor').value;
+            const room = document.getElementById('room').value;
+            const shelf = document.getElementById('shelf').value;
+
+            return site !== currentLocation.site || 
+                   floor !== currentLocation.floor || 
+                   room !== currentLocation.room || 
+                   shelf !== currentLocation.shelf;
+        }
+
+        // Save current location to records
+        function saveCurrentLocation() {
+            if (!currentLocation.site || !currentLocation.floor || !currentLocation.room || !currentLocation.shelf) {
+                return;
+            }
+
+            if (Object.keys(productScans).length === 0) {
+                return;
+            }
+
+            // Create a record for each product with its count
+            for (const [barcode, count] of Object.entries(productScans)) {
+                inventoryRecords.push({
+                    timestamp: new Date().toLocaleString('fr-FR'),
+                    site: currentLocation.site,
+                    floor: currentLocation.floor,
+                    room: currentLocation.room,
+                    shelf: currentLocation.shelf,
+                    productBarcode: barcode,
+                    quantity: count
+                });
+            }
+
+            // Update records count
+            const count = inventoryRecords.length;
+            document.getElementById('recordsInfo').textContent = `${count} enregistrement${count > 1 ? 's' : ''} sauvegardé${count > 1 ? 's' : ''}`;
+        }
+
+        // Handle Enter key for navigation and product scanning
+        fields.forEach((fieldId, index) => {
+            const input = document.getElementById(fieldId);
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    
+                    if (fieldId === 'product') {
+                        const barcode = input.value.trim();
+                        
+                        if (barcode === '') {
+                            return;
+                        }
+
+                        // Check if location fields are filled
+                        const site = document.getElementById('site').value;
+                        const floor = document.getElementById('floor').value;
+                        const room = document.getElementById('room').value;
+                        const shelf = document.getElementById('shelf').value;
+
+                        if (!site || !floor || !room || !shelf) {
+                            alert('Veuillez remplir tous les champs de localisation (Site, Étage, Salle, Étagère) avant de scanner les produits');
+                            return;
+                        }
+
+                        // If location has changed, save previous location and reset
+                        if (hasLocationChanged()) {
+                            saveCurrentLocation();
+                            
+                            // Update current location
+                            currentLocation.site = site;
+                            currentLocation.floor = floor;
+                            currentLocation.room = room;
+                            currentLocation.shelf = shelf;
+                            
+                            // Reset product scans
+                            productScans = {};
+                            
+                            updateLocationDisplay();
+                        }
+
+                        // Add or increment product count
+                        if (productScans[barcode]) {
+                            productScans[barcode]++;
+                        } else {
+                            productScans[barcode] = 1;
+                        }
+
+                        lastScannedProduct = barcode;
+                        updateProductList();
+                        
+                        // Clear input for next scan
+                        input.value = '';
+                    } else {
+                        // For location fields, move to next field
+                        if (index < fields.length - 1) {
+                            document.getElementById(fields[index + 1]).focus();
+                        }
+                    }
                 }
             });
-        }
+        });
 
-        // Populate scenario table
-        function populateScenarioTable() {
-            const tbody = document.getElementById('scenarioTable');
-            tbody.innerHTML = '';
+        // Handle Save & Move to Next Location button
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            const site = document.getElementById('site').value;
+            const floor = document.getElementById('floor').value;
+            const room = document.getElementById('room').value;
+            const shelf = document.getElementById('shelf').value;
 
-            scenarios.forEach(scenario => {
-                const row = tbody.insertRow();
-                row.insertCell(0).textContent = scenario.site;
-                row.insertCell(1).textContent = scenario.floor;
-                row.insertCell(2).textContent = scenario.room;
-                row.insertCell(3).textContent = scenario.shelf;
-                row.insertCell(4).textContent = scenario.products;
-                row.insertCell(5).textContent = scenario.count;
-            });
-        }
+            // Validate that location fields are filled
+            if (!site || !floor || !room || !shelf) {
+                alert('Veuillez remplir tous les champs de localisation (Site, Étage, Salle, Étagère)');
+                return;
+            }
 
-        // Print barcodes
-        function printBarcodes() {
-            window.print();
-        }
+            // Update current location if changed
+            if (hasLocationChanged()) {
+                saveCurrentLocation();
+                
+                currentLocation.site = site;
+                currentLocation.floor = floor;
+                currentLocation.room = room;
+                currentLocation.shelf = shelf;
+            }
 
-        // Download complete CSV
-        function downloadCSV() {
-            let csvContent = '';
-            
-            // Sites (no newline at end)
-            csvContent += 'SITES\n';
-            csvContent += 'Code,Name\n';
-            sites.forEach((s, index) => {
-                csvContent += `"${s.code}","${s.name}"`;
-                if (index < sites.length - 1) csvContent += '\n';
-            });
-            csvContent += '\n\n';
-            
-            // Floors (no newline at end)
-            csvContent += 'FLOORS\n';
-            csvContent += 'Code,Name\n';
-            floors.forEach((f, index) => {
-                csvContent += `"${f.code}","${f.name}"`;
-                if (index < floors.length - 1) csvContent += '\n';
-            });
-            csvContent += '\n\n';
-            
-            // Rooms (no newline at end)
-            csvContent += 'ROOMS\n';
-            csvContent += 'Code,Name\n';
-            rooms.forEach((r, index) => {
-                csvContent += `"${r.code}","${r.name}"`;
-                if (index < rooms.length - 1) csvContent += '\n';
-            });
-            csvContent += '\n\n';
-            
-            // Shelves (no newline at end)
-            csvContent += 'SHELVES\n';
-            csvContent += 'Code,Name\n';
-            shelves.forEach((s, index) => {
-                csvContent += `"${s.code}","${s.name}"`;
-                if (index < shelves.length - 1) csvContent += '\n';
-            });
-            csvContent += '\n\n';
-            
-            // Products (keep as is with newlines)
-            csvContent += 'PRODUCTS\n';
-            csvContent += 'Code,Name\n';
-            products.forEach(p => csvContent += `"${p.code}","${p.name}"\n`);
+            // Save current location
+            saveCurrentLocation();
 
+            const totalProducts = Object.values(productScans).reduce((sum, count) => sum + count, 0);
+            
+            // Show confirmation
+            alert(`Localisation enregistrée !\n\n${site} → ${floor} → ${room} → ${shelf}\n\nTotal produits scannés : ${totalProducts}`);
+            
+            // Reset for next location
+            document.getElementById('inventoryForm').reset();
+            productScans = {};
+            currentLocation = { site: '', floor: '', room: '', shelf: '' };
+            lastScannedProduct = '';
+            
+            updateLocationDisplay();
+            updateProductList();
+            document.getElementById('productCount').textContent = '0';
+            document.getElementById('site').focus();
+        });
+
+        // Handle Export button
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            if (inventoryRecords.length === 0) {
+                alert('Aucun enregistrement à exporter. Veuillez ajouter des enregistrements d\'inventaire d\'abord.');
+                return;
+            }
+
+            // Create CSV content
+            const headers = ['Horodatage', 'Site', 'Étage', 'Salle', 'Étagère', 'Code-barres Produit', 'Quantité'];
+            const csvRows = [headers.join(',')];
+
+            inventoryRecords.forEach(record => {
+                const row = [
+                    `"${record.timestamp}"`,
+                    `"${record.site}"`,
+                    `"${record.floor}"`,
+                    `"${record.room}"`,
+                    `"${record.shelf}"`,
+                    `"${record.productBarcode}"`,
+                    record.quantity
+                ];
+                csvRows.push(row.join(','));
+            });
+
+            const csvContent = csvRows.join('\n');
+
+            // Create blob and download
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             
+            // Generate filename with current date
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `inventaire_export_${date}.csv`;
+            
             link.setAttribute('href', url);
-            link.setAttribute('download', 'inventory_all_barcodes.csv');
+            link.setAttribute('download', filename);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+
+            alert(`${inventoryRecords.length} enregistrement${inventoryRecords.length > 1 ? 's' : ''} exporté${inventoryRecords.length > 1 ? 's' : ''} vers ${filename}`);
+        });
+
+        // Focus on first field when page loads
+        document.getElementById('site').focus();
+
+        // Fullscreen/Kiosk mode functionality
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) {
+                    elem.mozRequestFullScreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+                
+                fullscreenBtn.textContent = 'Quitter Mode Kiosque';
+                fullscreenBtn.classList.add('active');
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                
+                fullscreenBtn.textContent = 'Mode Kiosque';
+                fullscreenBtn.classList.remove('active');
+            }
+        });
+
+        // Update button text if fullscreen is exited
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButton);
+        document.addEventListener('msfullscreenchange', updateFullscreenButton);
+
+        function updateFullscreenButton() {
+            const isFullscreen = document.fullscreenElement || 
+                                document.webkitFullscreenElement || 
+                                document.mozFullScreenElement || 
+                                document.msFullscreenElement;
+            
+            if (!isFullscreen) {
+                fullscreenBtn.textContent = 'Mode Kiosque';
+                fullscreenBtn.classList.remove('active');
+            }
         }
 
-        // Initialize
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                if (typeof JsBarcode !== 'undefined') {
-                    generateCategoryBarcodes(sites, 'siteBarcodes', 'site', 'type-site');
-                    generateCategoryBarcodes(floors, 'floorBarcodes', 'floor', 'type-floor');
-                    generateCategoryBarcodes(rooms, 'roomBarcodes', 'room', 'type-room');
-                    generateCategoryBarcodes(shelves, 'shelfBarcodes', 'shelf', 'type-shelf');
-                    generateCategoryBarcodes(products, 'productBarcodes', 'product', 'type-product');
-                    populateScenarioTable();
-                } else {
-                    console.error('JsBarcode library not loaded');
-                    populateScenarioTable();
-                }
-            }, 500);
+        // Prevent zoom on double-tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker enregistré:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log(' Échec enregistrement Service Worker:', error);
+                    });
+            });
+        }
+
+        // Prompt pour installer la PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Vous pouvez afficher un bouton d'installation personnalisé ici
+            console.log('PWA peut être installée');
+        });
+
+        // Détection de l'installation
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installée avec succès');
+            deferredPrompt = null;
         });
     </script>
 </body>
