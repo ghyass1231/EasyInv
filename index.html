@@ -588,7 +588,7 @@
 
                 <div class="form-group">
                     <label for="product">Code-barres Produit</label>
-                    <input type="text" id="product" name="product" placeholder="Scanner le code-barres" value="NULL">
+                    <input type="text" id="product" name="product" placeholder="Scanner le code-barres">
                     <div class="product-hint">Scanner les produits en continu - sauvegarde auto</div>
                 </div>
 
@@ -861,21 +861,23 @@
                 const newInput = input.cloneNode(true);
                 input.parentNode.replaceChild(newInput, input);
 
-                // Clear field on focus (overwrite behavior)
+                // Clear field on focus and select all (overwrite behavior for all fields)
                 newInput.addEventListener('focus', (e) => {
-                    if (e.target.value === 'NULL') {
+                    if (fieldId !== 'product' && e.target.value === 'NULL') {
                         e.target.value = '';
                     }
-                    // Select all text so next input overwrites
-                    e.target.select();
+                    // Select all text so next input overwrites completely
+                    setTimeout(() => e.target.select(), 10);
                 });
 
-                // Restore NULL if field is empty on blur
-                newInput.addEventListener('blur', (e) => {
-                    if (e.target.value.trim() === '') {
-                        e.target.value = 'NULL';
-                    }
-                });
+                // Only restore NULL on blur for location fields, NOT for product field
+                if (fieldId !== 'product') {
+                    newInput.addEventListener('blur', (e) => {
+                        if (e.target.value.trim() === '') {
+                            e.target.value = 'NULL';
+                        }
+                    });
+                }
                 
                 newInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
@@ -931,59 +933,81 @@
                             lastScannedProduct = barcode;
                             updateProductList();
                             
-                            // Clear input for next scan
-                            newInput.value = 'NULL';
+                            // Clear input for next scan and select it
+                            newInput.value = '';
+                            setTimeout(() => newInput.select(), 10);
                         } else {
                             // For location fields, move to next field automatically
                             if (index < activeFields.length - 1) {
-                                const nextField = document.getElementById(activeFields[index + 1]);
+                                const nextFieldId = activeFields[index + 1];
+                                const nextField = document.getElementById(nextFieldId);
                                 if (nextField) {
                                     nextField.focus();
-                                    // Select all text in next field for overwrite
-                                    nextField.select();
+                                    // Select all for immediate overwrite
+                                    setTimeout(() => nextField.select(), 10);
                                 }
                             }
                         }
                     }
                 });
 
-                // Auto-tabulation for location fields when barcode is scanned
+                // Enhanced auto-tabulation with better barcode detection
                 if (fieldId !== 'product') {
+                    let scanBuffer = '';
+                    let scanTimeout = null;
+                    
                     newInput.addEventListener('input', (e) => {
                         const value = e.target.value.trim();
                         
-                        // If input looks like a complete barcode scan (6+ chars)
-                        if (value.length >= 6 && value !== 'NULL') {
-                            setTimeout(() => {
-                                const enterEvent = new KeyboardEvent('keydown', {
-                                    key: 'Enter',
-                                    code: 'Enter',
-                                    keyCode: 13,
-                                    which: 13,
-                                    bubbles: true
-                                });
-                                e.target.dispatchEvent(enterEvent);
-                            }, 100);
+                        // Clear previous timeout
+                        if (scanTimeout) {
+                            clearTimeout(scanTimeout);
+                        }
+                        
+                        // Barcode scanners type very fast (usually < 50ms between characters)
+                        // If we get 4+ characters, assume it's a scan
+                        if (value.length >= 4 && value !== 'NULL') {
+                            scanTimeout = setTimeout(() => {
+                                // Auto-tab after short delay to ensure scan is complete
+                                if (value.length >= 4) {
+                                    const enterEvent = new KeyboardEvent('keydown', {
+                                        key: 'Enter',
+                                        code: 'Enter',
+                                        keyCode: 13,
+                                        which: 13,
+                                        bubbles: true
+                                    });
+                                    e.target.dispatchEvent(enterEvent);
+                                }
+                            }, 150); // Increased delay to ensure full scan
                         }
                     });
                 }
 
-                // For product field, auto-process
+                // For product field, auto-process with same enhanced detection
                 if (fieldId === 'product') {
+                    let productScanTimeout = null;
+                    
                     newInput.addEventListener('input', (e) => {
                         const value = e.target.value.trim();
                         
-                        if (value.length >= 6 && value !== 'NULL') {
-                            setTimeout(() => {
-                                const enterEvent = new KeyboardEvent('keydown', {
-                                    key: 'Enter',
-                                    code: 'Enter',
-                                    keyCode: 13,
-                                    which: 13,
-                                    bubbles: true
-                                });
-                                e.target.dispatchEvent(enterEvent);
-                            }, 100);
+                        if (productScanTimeout) {
+                            clearTimeout(productScanTimeout);
+                        }
+                        
+                        if (value.length >= 4) {
+                            productScanTimeout = setTimeout(() => {
+                                if (value.length >= 4) {
+                                    const enterEvent = new KeyboardEvent('keydown', {
+                                        key: 'Enter',
+                                        code: 'Enter',
+                                        keyCode: 13,
+                                        which: 13,
+                                        bubbles: true
+                                    });
+                                    e.target.dispatchEvent(enterEvent);
+                                }
+                            }, 150);
                         }
                     });
                 }
@@ -1101,7 +1125,7 @@
             link.click();
             document.body.removeChild(link);
 
-            alert(`✅ ${inventoryRecords.length} enregistrement${inventoryRecords.length > 1 ? 's' : ''} exporté${inventoryRecords.length > 1 ? 's' : ''} vers ${filename}`);
+            alert(`${inventoryRecords.length} enregistrement${inventoryRecords.length > 1 ? 's' : ''} exporté${inventoryRecords.length > 1 ? 's' : ''} vers ${filename}`);
         });
 
         // Fullscreen/Kiosk mode functionality
@@ -1163,15 +1187,15 @@
             lastTouchEnd = now;
         }, false);
 
-        // Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
+        // Register Service Worker for PWA (only if not in iframe/artifact)
+        if ('serviceWorker' in navigator && window.location.hostname !== 'www.claudeusercontent.com') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
                     .then((registration) => {
-                        console.log('✅ Service Worker enregistré:', registration.scope);
+                        console.log('Service Worker enregistré:', registration.scope);
                     })
                     .catch((error) => {
-                        console.log('❌ Échec enregistrement Service Worker:', error);
+                        console.log('Échec enregistrement Service Worker:', error);
                     });
             });
         }
