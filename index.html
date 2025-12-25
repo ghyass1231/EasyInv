@@ -40,7 +40,7 @@
 
         .header {
             background: white;
-            padding: 12px;
+            padding: 10px 12px;
             border-radius: 12px 12px 0 0;
             display: flex;
             align-items: center;
@@ -55,22 +55,27 @@
         }
 
         .logo {
-            height: 35px;
+            height: 30px;
             width: auto;
         }
 
         .app-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #dc2626;
             letter-spacing: 0.5px;
         }
 
-        .fullscreen-btn {
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .settings-btn, .fullscreen-btn {
             background: #dc2626;
             color: white;
             border: none;
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 600;
@@ -79,13 +84,119 @@
             box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
         }
 
-        .fullscreen-btn:hover {
+        .settings-btn:hover, .fullscreen-btn:hover {
             background: #b91c1c;
             transform: scale(1.05);
         }
 
-        .fullscreen-btn.active {
+        .settings-btn.active, .fullscreen-btn.active {
             background: #991b1b;
+        }
+
+        /* Settings Sidebar */
+        .settings-sidebar {
+            position: fixed;
+            right: -350px;
+            top: 0;
+            width: 350px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+            transition: right 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .settings-sidebar.open {
+            right: 0;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #fecaca;
+        }
+
+        .settings-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #dc2626;
+        }
+
+        .close-settings {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #991b1b;
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #991b1b;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .settings-field {
+            margin-bottom: 12px;
+        }
+
+        .settings-field label {
+            display: block;
+            font-size: 12px;
+            color: #374151;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .settings-field input[type="text"],
+        .settings-field input[type="url"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #fecaca;
+            border-radius: 6px;
+            font-size: 13px;
+            background: #fef2f2;
+        }
+
+        .settings-field input:focus {
+            outline: none;
+            border-color: #dc2626;
+            background: white;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #fef2f2;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            margin: 0;
         }
 
         .container {
@@ -101,37 +212,37 @@
         }
 
         .content {
-            padding: 15px;
+            padding: 12px;
             overflow-y: auto;
             flex: 1;
         }
 
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
         }
 
         label {
             display: block;
             color: #991b1b;
             font-weight: 600;
-            margin-bottom: 4px;
-            font-size: 12px;
+            margin-bottom: 3px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 10px;
+            padding: 7px 8px;
             border: 2px solid #fecaca;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.3s ease;
             -webkit-appearance: none;
             background: #fef2f2;
@@ -147,33 +258,34 @@
         .count-display {
             background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
             color: white;
-            padding: 12px;
+            padding: 8px 12px;
             border-radius: 8px;
-            text-align: center;
-            margin: 12px 0;
+            margin: 10px 0;
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .count-label {
             font-size: 11px;
             opacity: 0.95;
-            margin-bottom: 4px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .count-value {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
         }
 
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -205,28 +317,23 @@
             background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
         }
 
-        .btn-secondary:disabled {
-            background: #d1d5db;
-            cursor: not-allowed;
-        }
-
         .current-location {
             background: #fef2f2;
             border-left: 4px solid #dc2626;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 8px;
+            margin: 8px 0;
             border-radius: 6px;
             color: #991b1b;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
         }
 
         .product-list {
             background: #f9fafb;
             border-radius: 6px;
-            padding: 10px;
-            margin-top: 10px;
-            max-height: 140px;
+            padding: 8px;
+            margin-top: 8px;
+            max-height: 100px;
             overflow-y: auto;
             border: 1px solid #fecaca;
         }
@@ -234,8 +341,8 @@
         .product-list-title {
             font-weight: 600;
             color: #991b1b;
-            font-size: 11px;
-            margin-bottom: 8px;
+            font-size: 10px;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
@@ -243,13 +350,20 @@
         .product-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px;
-            margin: 4px 0;
+            align-items: center;
+            padding: 6px;
+            margin: 3px 0;
             background: white;
             border-radius: 4px;
             border-left: 3px solid #dc2626;
-            font-size: 12px;
+            font-size: 11px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .product-item-info {
+            display: flex;
+            justify-content: space-between;
+            flex: 1;
         }
 
         .product-item span:first-child {
@@ -262,21 +376,35 @@
             font-weight: bold;
         }
 
+        .remove-product-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0 5px;
+            transition: transform 0.2s;
+        }
+
+        .remove-product-btn:hover {
+            transform: scale(1.2);
+        }
+
         .records-info {
             text-align: center;
             color: white;
             font-weight: 600;
-            margin-top: 10px;
-            font-size: 11px;
+            margin-top: 8px;
+            font-size: 10px;
             background: rgba(220, 38, 38, 0.9);
-            padding: 6px;
+            padding: 5px;
             border-radius: 6px;
         }
 
         .product-hint {
-            font-size: 10px;
+            font-size: 9px;
             color: #991b1b;
-            margin-top: 3px;
+            margin-top: 2px;
             font-style: italic;
         }
 
@@ -291,51 +419,49 @@
             }
 
             .header {
-                padding: 8px;
+                padding: 6px 10px;
             }
 
             .logo {
-                height: 28px;
+                height: 25px;
             }
 
             .app-title {
-                font-size: 16px;
+                font-size: 15px;
             }
 
             .content {
-                padding: 10px;
+                padding: 8px;
             }
 
             .form-group {
-                margin-bottom: 8px;
+                margin-bottom: 6px;
             }
 
             label {
-                font-size: 11px;
-                margin-bottom: 3px;
+                font-size: 10px;
             }
 
             input[type="text"] {
-                padding: 8px;
-                font-size: 13px;
+                padding: 6px;
+                font-size: 12px;
             }
 
             .count-display {
-                padding: 10px;
-                margin: 10px 0;
+                padding: 6px 10px;
             }
 
             .count-value {
-                font-size: 24px;
+                font-size: 20px;
             }
 
             .btn {
-                padding: 10px;
-                font-size: 13px;
+                padding: 8px;
+                font-size: 12px;
             }
 
             .product-list {
-                max-height: 100px;
+                max-height: 80px;
             }
         }
 
@@ -364,47 +490,105 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #b91c1c;
         }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
+    <!-- Settings Sidebar -->
+    <div class="settings-sidebar" id="settingsSidebar">
+        <div class="settings-header">
+            <div class="settings-title">Paramètres</div>
+            <button class="close-settings" id="closeSettings">×</button>
+        </div>
+
+        <!-- Branding Section -->
+        <div class="settings-section">
+            <div class="settings-section-title">Branding</div>
+            <div class="settings-field">
+                <label>Logo URL</label>
+                <input type="url" id="logoUrl" placeholder="https://exemple.com/logo.png">
+            </div>
+            <div class="settings-field">
+                <label>Nom de l'application</label>
+                <input type="text" id="appName" placeholder="EasyInv">
+            </div>
+        </div>
+
+        <!-- Export Configuration -->
+        <div class="settings-section">
+            <div class="settings-section-title">Export à Distance</div>
+            <div class="settings-field">
+                <label>Serveur d'export</label>
+                <input type="text" id="exportServer" placeholder="exportServ:8010">
+            </div>
+        </div>
+
+        <!-- Fields Management -->
+        <div class="settings-section">
+            <div class="settings-section-title">Champs de Localisation</div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="enableSite" checked>
+                <label for="enableSite">Site</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="enableFloor" checked>
+                <label for="enableFloor">Étage</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="enableRoom" checked>
+                <label for="enableRoom">Salle</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="enableShelf" checked>
+                <label for="enableShelf">Étagère</label>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="header">
             <div class="logo-container">
-                <img src="https://scantech-group.com/wp-content/uploads/2024/10/SG_logo_RVB-01.png" alt="ScanTech Group" class="logo">
-                <span class="app-title">EasyInv</span>
+                <img src="https://scantech-group.com/wp-content/uploads/2024/10/SG_logo_RVB-01.png" alt="Logo" class="logo" id="appLogo">
+                <span class="app-title" id="appTitle">EasyInv</span>
             </div>
-            <button class="fullscreen-btn" id="fullscreenBtn">🖥️ Mode Kiosque</button>
+            <div class="header-buttons">
+                <button class="settings-btn" id="settingsBtn">⚙️</button>
+                <button class="fullscreen-btn" id="fullscreenBtn">🖥️</button>
+            </div>
         </div>
 
         <div class="content">
             <form id="inventoryForm">
-                <div class="form-row">
-                    <div class="form-group">
+                <div class="form-row" id="siteFloorRow">
+                    <div class="form-group" id="siteGroup">
                         <label for="site">Site</label>
-                        <input type="text" id="site" name="site" required>
+                        <input type="text" id="site" name="site" value="NULL">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="floorGroup">
                         <label for="floor">Étage</label>
-                        <input type="text" id="floor" name="floor" required>
+                        <input type="text" id="floor" name="floor" value="NULL">
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
+                <div class="form-row" id="roomShelfRow">
+                    <div class="form-group" id="roomGroup">
                         <label for="room">Salle</label>
-                        <input type="text" id="room" name="room" required>
+                        <input type="text" id="room" name="room" value="NULL">
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="shelfGroup">
                         <label for="shelf">Étagère</label>
-                        <input type="text" id="shelf" name="shelf" required>
+                        <input type="text" id="shelf" name="shelf" value="NULL">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="product">Code-barres Produit</label>
-                    <input type="text" id="product" name="product" placeholder="Scanner le code-barres">
+                    <input type="text" id="product" name="product" placeholder="Scanner le code-barres" value="NULL">
                     <div class="product-hint">Scanner les produits en continu - sauvegarde auto</div>
                 </div>
 
@@ -422,8 +606,8 @@
                     <div id="productItems"></div>
                 </div>
 
-                <button type="button" class="btn btn-primary" id="saveBtn">💾 Enregistrer & Suivant</button>
-                <button type="button" class="btn btn-secondary" id="exportBtn">📊 Exporter l'inventaire</button>
+                <button type="button" class="btn btn-primary" id="saveBtn">Enregistrer & Suivant</button>
+                <button type="button" class="btn btn-secondary" id="exportBtn">Exporter l'inventaire</button>
                 <div class="records-info" id="recordsInfo">0 enregistrement sauvegardé</div>
             </form>
         </div>
@@ -439,15 +623,150 @@
         };
         let productScans = {};
         let lastScannedProduct = '';
-        const fields = ['site', 'floor', 'room', 'shelf', 'product'];
         
+        // Settings
+        let settings = {
+            logoUrl: 'https://scantech-group.com/wp-content/uploads/2024/10/SG_logo_RVB-01.png',
+            appName: 'EasyInv',
+            exportServer: '',
+            enableSite: true,
+            enableFloor: true,
+            enableRoom: true,
+            enableShelf: true
+        };
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const saved = localStorage.getItem('easyinv-settings');
+            if (saved) {
+                settings = { ...settings, ...JSON.parse(saved) };
+                applySettings();
+            }
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            localStorage.setItem('easyinv-settings', JSON.stringify(settings));
+            applySettings();
+        }
+
+        // Apply settings to UI
+        function applySettings() {
+            document.getElementById('appLogo').src = settings.logoUrl;
+            document.getElementById('appTitle').textContent = settings.appName;
+            document.getElementById('logoUrl').value = settings.logoUrl;
+            document.getElementById('appName').value = settings.appName;
+            document.getElementById('exportServer').value = settings.exportServer;
+            document.getElementById('enableSite').checked = settings.enableSite;
+            document.getElementById('enableFloor').checked = settings.enableFloor;
+            document.getElementById('enableRoom').checked = settings.enableRoom;
+            document.getElementById('enableShelf').checked = settings.enableShelf;
+
+            // Show/hide fields
+            document.getElementById('siteGroup').classList.toggle('hidden', !settings.enableSite);
+            document.getElementById('floorGroup').classList.toggle('hidden', !settings.enableFloor);
+            document.getElementById('roomGroup').classList.toggle('hidden', !settings.enableRoom);
+            document.getElementById('shelfGroup').classList.toggle('hidden', !settings.enableShelf);
+
+            updateFieldsArray();
+        }
+
+        // Get active fields
+        function getActiveFields() {
+            const active = [];
+            if (settings.enableSite) active.push('site');
+            if (settings.enableFloor) active.push('floor');
+            if (settings.enableRoom) active.push('room');
+            if (settings.enableShelf) active.push('shelf');
+            active.push('product');
+            return active;
+        }
+
+        let fields = getActiveFields();
+
+        function updateFieldsArray() {
+            fields = getActiveFields();
+            setupFieldHandlers();
+        }
+
+        // Settings sidebar toggle
+        document.getElementById('settingsBtn').addEventListener('click', () => {
+            document.getElementById('settingsSidebar').classList.add('open');
+        });
+
+        document.getElementById('closeSettings').addEventListener('click', () => {
+            document.getElementById('settingsSidebar').classList.remove('close');
+        });
+
+        // Settings inputs
+        document.getElementById('logoUrl').addEventListener('change', (e) => {
+            settings.logoUrl = e.target.value;
+            saveSettings();
+        });
+
+        document.getElementById('appName').addEventListener('change', (e) => {
+            settings.appName = e.target.value;
+            saveSettings();
+        });
+
+        document.getElementById('exportServer').addEventListener('change', (e) => {
+            settings.exportServer = e.target.value;
+            saveSettings();
+        });
+
+        document.getElementById('enableSite').addEventListener('change', (e) => {
+            settings.enableSite = e.target.checked;
+            saveSettings();
+        });
+
+        document.getElementById('enableFloor').addEventListener('change', (e) => {
+            settings.enableFloor = e.target.checked;
+            saveSettings();
+        });
+
+        document.getElementById('enableRoom').addEventListener('change', (e) => {
+            settings.enableRoom = e.target.checked;
+            saveSettings();
+        });
+
+        document.getElementById('enableShelf').addEventListener('change', (e) => {
+            settings.enableShelf = e.target.checked;
+            saveSettings();
+        });
+
+        // Close settings when clicking outside
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('settingsSidebar');
+            const settingsBtn = document.getElementById('settingsBtn');
+            
+            if (sidebar.classList.contains('open') && 
+                !sidebar.contains(e.target) && 
+                e.target !== settingsBtn) {
+                sidebar.classList.remove('open');
+            }
+        });
+
         // Update current location display
         function updateLocationDisplay() {
             const locationEl = document.getElementById('currentLocation');
-            if (currentLocation.site && currentLocation.floor && currentLocation.room && currentLocation.shelf) {
-                locationEl.innerHTML = `<strong>Localisation actuelle :</strong> ${currentLocation.site} → ${currentLocation.floor} → ${currentLocation.room} → ${currentLocation.shelf}`;
+            const parts = [];
+            if (settings.enableSite && currentLocation.site) parts.push(currentLocation.site);
+            if (settings.enableFloor && currentLocation.floor) parts.push(currentLocation.floor);
+            if (settings.enableRoom && currentLocation.room) parts.push(currentLocation.room);
+            if (settings.enableShelf && currentLocation.shelf) parts.push(currentLocation.shelf);
+            
+            if (parts.length > 0) {
+                locationEl.innerHTML = `<strong>Localisation actuelle :</strong> ${parts.join(' → ')}`;
             } else {
                 locationEl.innerHTML = '<strong>Localisation actuelle :</strong> Non définie';
+            }
+        }
+
+        // Remove product from scan list
+        function removeProduct(barcode) {
+            if (productScans[barcode]) {
+                delete productScans[barcode];
+                updateProductList();
             }
         }
 
@@ -466,7 +785,13 @@
                 for (const [barcode, count] of Object.entries(productScans)) {
                     const item = document.createElement('div');
                     item.className = 'product-item';
-                    item.innerHTML = `<span>${barcode}</span><span>×${count}</span>`;
+                    item.innerHTML = `
+                        <div class="product-item-info">
+                            <span>${barcode}</span>
+                            <span>×${count}</span>
+                        </div>
+                        <button class="remove-product-btn" onclick="removeProduct('${barcode}')">❌</button>
+                    `;
                     productItemsEl.appendChild(item);
                 }
             } else {
@@ -476,10 +801,10 @@
 
         // Check if location has changed
         function hasLocationChanged() {
-            const site = document.getElementById('site').value;
-            const floor = document.getElementById('floor').value;
-            const room = document.getElementById('room').value;
-            const shelf = document.getElementById('shelf').value;
+            const site = settings.enableSite ? document.getElementById('site').value : '';
+            const floor = settings.enableFloor ? document.getElementById('floor').value : '';
+            const room = settings.enableRoom ? document.getElementById('room').value : '';
+            const shelf = settings.enableShelf ? document.getElementById('shelf').value : '';
 
             return site !== currentLocation.site || 
                    floor !== currentLocation.floor || 
@@ -489,7 +814,13 @@
 
         // Save current location to records
         function saveCurrentLocation() {
-            if (!currentLocation.site || !currentLocation.floor || !currentLocation.room || !currentLocation.shelf) {
+            const hasRequiredFields = 
+                (!settings.enableSite || currentLocation.site) &&
+                (!settings.enableFloor || currentLocation.floor) &&
+                (!settings.enableRoom || currentLocation.room) &&
+                (!settings.enableShelf || currentLocation.shelf);
+
+            if (!hasRequiredFields) {
                 return;
             }
 
@@ -499,15 +830,18 @@
 
             // Create a record for each product with its count
             for (const [barcode, count] of Object.entries(productScans)) {
-                inventoryRecords.push({
-                    timestamp: new Date().toLocaleString('fr-FR'),
-                    site: currentLocation.site,
-                    floor: currentLocation.floor,
-                    room: currentLocation.room,
-                    shelf: currentLocation.shelf,
+                const record = {
+                    timestamp: new Date().toISOString(),
                     productBarcode: barcode,
                     quantity: count
-                });
+                };
+
+                if (settings.enableSite) record.site = currentLocation.site;
+                if (settings.enableFloor) record.floor = currentLocation.floor;
+                if (settings.enableRoom) record.room = currentLocation.room;
+                if (settings.enableShelf) record.shelf = currentLocation.shelf || 'NULL';
+
+                inventoryRecords.push(record);
             }
 
             // Update records count
@@ -515,126 +849,162 @@
             document.getElementById('recordsInfo').textContent = `${count} enregistrement${count > 1 ? 's' : ''} sauvegardé${count > 1 ? 's' : ''}`;
         }
 
-        // Handle Enter key for navigation and product scanning
-        fields.forEach((fieldId, index) => {
-            const input = document.getElementById(fieldId);
+        // Setup field handlers
+        function setupFieldHandlers() {
+            const activeFields = getActiveFields();
             
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    
-                    if (fieldId === 'product') {
-                        const barcode = input.value.trim();
+            activeFields.forEach((fieldId, index) => {
+                const input = document.getElementById(fieldId);
+                if (!input) return;
+
+                // Remove old listeners by cloning
+                const newInput = input.cloneNode(true);
+                input.parentNode.replaceChild(newInput, input);
+
+                // Clear field on focus (overwrite behavior)
+                newInput.addEventListener('focus', (e) => {
+                    if (e.target.value === 'NULL') {
+                        e.target.value = '';
+                    }
+                    // Select all text so next input overwrites
+                    e.target.select();
+                });
+
+                // Restore NULL if field is empty on blur
+                newInput.addEventListener('blur', (e) => {
+                    if (e.target.value.trim() === '') {
+                        e.target.value = 'NULL';
+                    }
+                });
+                
+                newInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
                         
-                        if (barcode === '') {
-                            return;
-                        }
-
-                        // Check if location fields are filled
-                        const site = document.getElementById('site').value;
-                        const floor = document.getElementById('floor').value;
-                        const room = document.getElementById('room').value;
-                        const shelf = document.getElementById('shelf').value;
-
-                        if (!site || !floor || !room || !shelf) {
-                            alert('Veuillez remplir tous les champs de localisation (Site, Étage, Salle, Étagère) avant de scanner les produits');
-                            return;
-                        }
-
-                        // If location has changed, save previous location and reset
-                        if (hasLocationChanged()) {
-                            saveCurrentLocation();
+                        if (fieldId === 'product') {
+                            const barcode = newInput.value.trim();
                             
-                            // Update current location
-                            currentLocation.site = site;
-                            currentLocation.floor = floor;
-                            currentLocation.room = room;
-                            currentLocation.shelf = shelf;
-                            
-                            // Reset product scans
-                            productScans = {};
-                            
-                            updateLocationDisplay();
-                        }
+                            if (barcode === '' || barcode === 'NULL') {
+                                return;
+                            }
 
-                        // Add or increment product count
-                        if (productScans[barcode]) {
-                            productScans[barcode]++;
+                            // Check if required location fields are filled
+                            const site = settings.enableSite ? document.getElementById('site').value : 'NULL';
+                            const floor = settings.enableFloor ? document.getElementById('floor').value : 'NULL';
+                            const room = settings.enableRoom ? document.getElementById('room').value : 'NULL';
+                            const shelf = settings.enableShelf ? document.getElementById('shelf').value : 'NULL';
+
+                            const hasRequiredFields = 
+                                (!settings.enableSite || (site && site !== 'NULL')) &&
+                                (!settings.enableFloor || (floor && floor !== 'NULL')) &&
+                                (!settings.enableRoom || (room && room !== 'NULL')) &&
+                                (!settings.enableShelf || (shelf && shelf !== 'NULL'));
+
+                            if (!hasRequiredFields) {
+                                alert('Veuillez remplir tous les champs de localisation actifs avant de scanner les produits');
+                                return;
+                            }
+
+                            // If location has changed, save previous location and reset
+                            if (hasLocationChanged()) {
+                                saveCurrentLocation();
+                                
+                                // Update current location
+                                currentLocation.site = site;
+                                currentLocation.floor = floor;
+                                currentLocation.room = room;
+                                currentLocation.shelf = shelf;
+                                
+                                // Reset product scans
+                                productScans = {};
+                                
+                                updateLocationDisplay();
+                            }
+
+                            // Add or increment product count
+                            if (productScans[barcode]) {
+                                productScans[barcode]++;
+                            } else {
+                                productScans[barcode] = 1;
+                            }
+
+                            lastScannedProduct = barcode;
+                            updateProductList();
+                            
+                            // Clear input for next scan
+                            newInput.value = 'NULL';
                         } else {
-                            productScans[barcode] = 1;
-                        }
-
-                        lastScannedProduct = barcode;
-                        updateProductList();
-                        
-                        // Clear input for next scan
-                        input.value = '';
-                    } else {
-                        // For location fields, move to next field automatically (tabulation)
-                        if (index < fields.length - 1) {
-                            document.getElementById(fields[index + 1]).focus();
+                            // For location fields, move to next field automatically
+                            if (index < activeFields.length - 1) {
+                                const nextField = document.getElementById(activeFields[index + 1]);
+                                if (nextField) {
+                                    nextField.focus();
+                                    // Select all text in next field for overwrite
+                                    nextField.select();
+                                }
+                            }
                         }
                     }
+                });
+
+                // Auto-tabulation for location fields when barcode is scanned
+                if (fieldId !== 'product') {
+                    newInput.addEventListener('input', (e) => {
+                        const value = e.target.value.trim();
+                        
+                        // If input looks like a complete barcode scan (6+ chars)
+                        if (value.length >= 6 && value !== 'NULL') {
+                            setTimeout(() => {
+                                const enterEvent = new KeyboardEvent('keydown', {
+                                    key: 'Enter',
+                                    code: 'Enter',
+                                    keyCode: 13,
+                                    which: 13,
+                                    bubbles: true
+                                });
+                                e.target.dispatchEvent(enterEvent);
+                            }, 100);
+                        }
+                    });
+                }
+
+                // For product field, auto-process
+                if (fieldId === 'product') {
+                    newInput.addEventListener('input', (e) => {
+                        const value = e.target.value.trim();
+                        
+                        if (value.length >= 6 && value !== 'NULL') {
+                            setTimeout(() => {
+                                const enterEvent = new KeyboardEvent('keydown', {
+                                    key: 'Enter',
+                                    code: 'Enter',
+                                    keyCode: 13,
+                                    which: 13,
+                                    bubbles: true
+                                });
+                                e.target.dispatchEvent(enterEvent);
+                            }, 100);
+                        }
+                    });
                 }
             });
-
-            // Auto-tabulation for location fields when barcode scanner inputs data
-            if (fieldId !== 'product') {
-                input.addEventListener('input', (e) => {
-                    const value = e.target.value.trim();
-                    
-                    // If value looks like a complete barcode (typically 6+ characters), auto-tab
-                    // Most barcode scanners send data quickly followed by Enter
-                    // This detects when a full scan is complete
-                    if (value.length >= 6) {
-                        setTimeout(() => {
-                            // Simulate Enter key to trigger auto-tab
-                            const enterEvent = new KeyboardEvent('keydown', {
-                                key: 'Enter',
-                                code: 'Enter',
-                                keyCode: 13,
-                                which: 13,
-                                bubbles: true
-                            });
-                            e.target.dispatchEvent(enterEvent);
-                        }, 100); // Small delay to ensure scan is complete
-                    }
-                });
-            }
-
-            // For product field, auto-process when scanner sends Enter
-            if (fieldId === 'product') {
-                input.addEventListener('input', (e) => {
-                    const value = e.target.value.trim();
-                    
-                    // Check if value ends with newline or carriage return (scanner behavior)
-                    if (value.length >= 6) {
-                        setTimeout(() => {
-                            // Auto-submit the product scan
-                            const enterEvent = new KeyboardEvent('keydown', {
-                                key: 'Enter',
-                                code: 'Enter',
-                                keyCode: 13,
-                                which: 13,
-                                bubbles: true
-                            });
-                            e.target.dispatchEvent(enterEvent);
-                        }, 100);
-                    }
-                });
-            }
-        });
+        }
 
         // Handle Save & Move to Next Location button
         document.getElementById('saveBtn').addEventListener('click', () => {
-            const site = document.getElementById('site').value;
-            const floor = document.getElementById('floor').value;
-            const room = document.getElementById('room').value;
-            const shelf = document.getElementById('shelf').value;
+            const site = settings.enableSite ? document.getElementById('site').value : 'NULL';
+            const floor = settings.enableFloor ? document.getElementById('floor').value : 'NULL';
+            const room = settings.enableRoom ? document.getElementById('room').value : 'NULL';
+            const shelf = settings.enableShelf ? document.getElementById('shelf').value : 'NULL';
 
-            // Validate that location fields are filled
-            if (!site || !floor || !room || !shelf) {
-                alert('Veuillez remplir tous les champs de localisation (Site, Étage, Salle, Étagère)');
+            const hasRequiredFields = 
+                (!settings.enableSite || (site && site !== 'NULL')) &&
+                (!settings.enableFloor || (floor && floor !== 'NULL')) &&
+                (!settings.enableRoom || (room && room !== 'NULL')) &&
+                (!settings.enableShelf || (shelf && shelf !== 'NULL'));
+
+            if (!hasRequiredFields) {
+                alert('Veuillez remplir tous les champs de localisation actifs');
                 return;
             }
 
@@ -653,11 +1023,21 @@
 
             const totalProducts = Object.values(productScans).reduce((sum, count) => sum + count, 0);
             
-            // Show confirmation
-            alert(`Localisation enregistrée !\n\n${site} → ${floor} → ${room} → ${shelf}\n\nTotal produits scannés : ${totalProducts}`);
+            const locationParts = [];
+            if (settings.enableSite && site && site !== 'NULL') locationParts.push(site);
+            if (settings.enableFloor && floor && floor !== 'NULL') locationParts.push(floor);
+            if (settings.enableRoom && room && room !== 'NULL') locationParts.push(room);
+            if (settings.enableShelf && shelf && shelf !== 'NULL') locationParts.push(shelf);
             
-            // Reset for next location
-            document.getElementById('inventoryForm').reset();
+            alert(`Localisation enregistrée !\n\n${locationParts.join(' → ')}\n\nTotal produits scannés : ${totalProducts}`);
+            
+            // Reset for next location - set all fields back to NULL
+            if (settings.enableSite) document.getElementById('site').value = 'NULL';
+            if (settings.enableFloor) document.getElementById('floor').value = 'NULL';
+            if (settings.enableRoom) document.getElementById('room').value = 'NULL';
+            if (settings.enableShelf) document.getElementById('shelf').value = 'NULL';
+            document.getElementById('product').value = 'NULL';
+            
             productScans = {};
             currentLocation = { site: '', floor: '', room: '', shelf: '' };
             lastScannedProduct = '';
@@ -665,7 +1045,12 @@
             updateLocationDisplay();
             updateProductList();
             document.getElementById('productCount').textContent = '0';
-            document.getElementById('site').focus();
+            
+            // Focus on first enabled field
+            const firstField = getActiveFields()[0];
+            if (firstField && firstField !== 'product') {
+                document.getElementById(firstField).focus();
+            }
         });
 
         // Handle Export button
@@ -675,20 +1060,27 @@
                 return;
             }
 
-            // Create CSV content
-            const headers = ['Horodatage', 'Site', 'Étage', 'Salle', 'Étagère', 'Code-barres Produit', 'Quantité'];
+            // Build headers based on enabled fields (in English)
+            const headers = [];
+            headers.push('Timestamp');
+            if (settings.enableSite) headers.push('Site');
+            if (settings.enableFloor) headers.push('Floor');
+            if (settings.enableRoom) headers.push('Room');
+            if (settings.enableShelf) headers.push('Shelf');
+            headers.push('Product_Barcode');
+            headers.push('Quantity');
+
             const csvRows = [headers.join(',')];
 
             inventoryRecords.forEach(record => {
-                const row = [
-                    `"${record.timestamp}"`,
-                    `"${record.site}"`,
-                    `"${record.floor}"`,
-                    `"${record.room}"`,
-                    `"${record.shelf}"`,
-                    `"${record.productBarcode}"`,
-                    record.quantity
-                ];
+                const row = [];
+                row.push(`"${record.timestamp}"`);
+                if (settings.enableSite) row.push(`"${record.site || 'NULL'}"`);
+                if (settings.enableFloor) row.push(`"${record.floor || 'NULL'}"`);
+                if (settings.enableRoom) row.push(`"${record.room || 'NULL'}"`);
+                if (settings.enableShelf) row.push(`"${record.shelf || 'NULL'}"`);
+                row.push(`"${record.productBarcode}"`);
+                row.push(record.quantity);
                 csvRows.push(row.join(','));
             });
 
@@ -699,9 +1091,8 @@
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             
-            // Generate filename with current date
             const date = new Date().toISOString().split('T')[0];
-            const filename = `inventaire_export_${date}.csv`;
+            const filename = `inventory_export_${date}.csv`;
             
             link.setAttribute('href', url);
             link.setAttribute('download', filename);
@@ -710,11 +1101,8 @@
             link.click();
             document.body.removeChild(link);
 
-            alert(`${inventoryRecords.length} enregistrement${inventoryRecords.length > 1 ? 's' : ''} exporté${inventoryRecords.length > 1 ? 's' : ''} vers ${filename}`);
+            alert(`✅ ${inventoryRecords.length} enregistrement${inventoryRecords.length > 1 ? 's' : ''} exporté${inventoryRecords.length > 1 ? 's' : ''} vers ${filename}`);
         });
-
-        // Focus on first field when page loads
-        document.getElementById('site').focus();
 
         // Fullscreen/Kiosk mode functionality
         const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -732,7 +1120,6 @@
                     elem.msRequestFullscreen();
                 }
                 
-                fullscreenBtn.textContent = 'Quitter Mode Kiosque';
                 fullscreenBtn.classList.add('active');
             } else {
                 if (document.exitFullscreen) {
@@ -745,12 +1132,11 @@
                     document.msExitFullscreen();
                 }
                 
-                fullscreenBtn.textContent = 'Mode Kiosque';
                 fullscreenBtn.classList.remove('active');
             }
         });
 
-        // Update button text if fullscreen is exited
+        // Update button if fullscreen is exited
         document.addEventListener('fullscreenchange', updateFullscreenButton);
         document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
         document.addEventListener('mozfullscreenchange', updateFullscreenButton);
@@ -763,7 +1149,6 @@
                                 document.msFullscreenElement;
             
             if (!isFullscreen) {
-                fullscreenBtn.textContent = 'Mode Kiosque';
                 fullscreenBtn.classList.remove('active');
             }
         }
@@ -783,29 +1168,23 @@
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
                     .then((registration) => {
-                        console.log('Service Worker enregistré:', registration.scope);
+                        console.log('✅ Service Worker enregistré:', registration.scope);
                     })
                     .catch((error) => {
-                        console.log('Échec enregistrement Service Worker:', error);
+                        console.log('❌ Échec enregistrement Service Worker:', error);
                     });
             });
         }
 
-        // Prompt pour installer la PWA
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Vous pouvez afficher un bouton d'installation personnalisé ici
-            console.log('PWA peut être installée');
-        });
-
-        // Détection de l'installation
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA installée avec succès');
-            deferredPrompt = null;
-        });
+        // Initialize
+        loadSettings();
+        setupFieldHandlers();
+        
+        // Focus on first enabled field
+        const firstField = getActiveFields()[0];
+        if (firstField && firstField !== 'product') {
+            document.getElementById(firstField).focus();
+        }
     </script>
 </body>
 </html>
