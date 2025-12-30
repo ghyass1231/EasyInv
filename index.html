@@ -517,15 +517,6 @@
             </div>
         </div>
 
-        <!-- Export Configuration -->
-        <div class="settings-section">
-            <div class="settings-section-title">Export à Distance</div>
-            <div class="settings-field">
-                <label>Serveur d'export</label>
-                <input type="text" id="exportServer" placeholder="exportServ:8010">
-            </div>
-        </div>
-
         <!-- API Configuration -->
         <div class="settings-section">
             <div class="settings-section-title">API / Intégration ERP/WMS</div>
@@ -586,6 +577,9 @@
         </div>
     </div>
 
+    <!-- Sync Status Indicator -->
+    <div class="sync-indicator" id="syncIndicator">✓</div>
+
     <div class="container">
         <div class="header">
             <div class="logo-container">
@@ -644,9 +638,21 @@
                     <div id="productItems"></div>
                 </div>
 
-                <button type="button" class="btn btn-primary" id="saveBtn">Enregistrer & Suivant</button>
-                <button type="button" class="btn btn-secondary" id="exportBtn">Exporter l'inventaire</button>
-                <button type="button" class="btn btn-secondary" id="syncBtn" style="display: none;">Synchroniser avec API</button>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-primary" id="saveBtn">
+                        <span class="btn-icon">💾</span>
+                        <span>Enregistrer</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="exportBtn">
+                        <span class="btn-icon">📥</span>
+                        <span>Export CSV</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="syncBtn" style="display: none;">
+                        <span class="btn-icon">🔄</span>
+                        <span>Sync API</span>
+                    </button>
+                </div>
+
                 <div class="records-info" id="recordsInfo">0 enregistrement sauvegardé</div>
             </form>
         </div>
@@ -654,6 +660,7 @@
 
     <script>
         let inventoryRecords = [];
+        let syncedRecordIds = new Set(); // Track which records have been synced
         let currentLocation = {
             site: '',
             floor: '',
@@ -667,7 +674,6 @@
         let settings = {
             logoUrl: 'https://scantech-group.com/wp-content/uploads/2024/10/SG_logo_RVB-01.png',
             appName: 'EasyInv',
-            exportServer: '',
             enableSite: true,
             enableFloor: true,
             enableRoom: true,
@@ -702,7 +708,6 @@
             document.getElementById('appTitle').textContent = settings.appName;
             document.getElementById('logoUrl').value = settings.logoUrl;
             document.getElementById('appName').value = settings.appName;
-            document.getElementById('exportServer').value = settings.exportServer;
             document.getElementById('apiEnabled').checked = settings.apiEnabled;
             document.getElementById('apiEndpoint').value = settings.apiEndpoint;
             document.getElementById('apiKey').value = settings.apiKey;
@@ -770,11 +775,6 @@
 
         document.getElementById('appName').addEventListener('change', (e) => {
             settings.appName = e.target.value;
-            saveSettings();
-        });
-
-        document.getElementById('exportServer').addEventListener('change', (e) => {
-            settings.exportServer = e.target.value;
             saveSettings();
         });
 
@@ -1313,6 +1313,17 @@
         // API FUNCTIONS FOR ERP/WMS INTEGRATION
         // ============================================
 
+        // Show sync indicator
+        function showSyncIndicator(success) {
+            const indicator = document.getElementById('syncIndicator');
+            indicator.className = 'sync-indicator ' + (success ? 'success' : 'error');
+            indicator.textContent = success ? '✓' : '✗';
+            
+            setTimeout(() => {
+                indicator.className = 'sync-indicator';
+            }, 1000);
+        }
+
         // Send data to external API
         async function sendToAPI(record) {
             if (!settings.apiEnabled || !settings.apiEndpoint) {
@@ -1348,14 +1359,15 @@
                 if (response.ok) {
                     const result = await response.json();
                     console.log('✅ Données envoyées à l\'API:', result);
+                    showSyncIndicator(true);
                 } else {
                     const errorText = await response.text();
                     console.error('❌ Erreur API:', response.status, response.statusText, errorText);
-                    alert(`❌ Erreur API: ${response.status} ${response.statusText}\n\nVérifiez que l'URL est correcte:\n${settings.apiEndpoint}`);
+                    showSyncIndicator(false);
                 }
             } catch (error) {
                 console.error('❌ Erreur connexion API:', error);
-                alert(`❌ Erreur de connexion à l'API:\n${error.message}\n\nURL configurée: ${settings.apiEndpoint}\n\nVérifiez que:\n1. L'URL se termine par /api/inventory\n2. Le serveur est en ligne\n3. CORS est activé sur le serveur`);
+                showSyncIndicator(false);
             }
         }
 
@@ -1366,14 +1378,18 @@
                 return;
             }
 
-            if (inventoryRecords.length === 0) {
-                alert('⚠️ Aucune donnée à synchroniser.\n\nScannez des produits d\'abord, puis réessayez.');
+            // Get only records that haven't been synced yet
+            const unsyncedRecords = inventoryRecords.filter((record, index) => !syncedRecordIds.has(index));
+
+            if (unsyncedRecords.length === 0) {
+                showSyncIndicator(true);
+                console.log('✅ Toutes les données sont déjà synchronisées');
                 return;
             }
 
             console.log('🔄 Début de la synchronisation...');
             console.log('📡 URL:', settings.apiEndpoint);
-            console.log('📦 Nombre d\'enregistrements:', inventoryRecords.length);
+            console.log('📦 Nouveaux enregistrements:', unsyncedRecords.length);
 
             try {
                 const headers = {
@@ -1390,11 +1406,11 @@
                     headers: headers,
                     body: JSON.stringify({
                         action: 'sync_inventory',
-                        data: inventoryRecords,
+                        data: unsyncedRecords,
                         source: 'EasyInv',
                         version: '1.0',
                         timestamp: new Date().toISOString(),
-                        total_records: inventoryRecords.length
+                        total_records: unsyncedRecords.length
                     })
                 });
 
@@ -1403,15 +1419,23 @@
                 if (response.ok) {
                     const result = await response.json();
                     console.log('✅ Synchronisation réussie:', result);
-                    alert(`✅ Synchronisation réussie !\n\n${inventoryRecords.length} enregistrement${inventoryRecords.length > 1 ? 's' : ''} envoyé${inventoryRecords.length > 1 ? 's' : ''} à :\n${settings.apiEndpoint}\n\nConsultez le dashboard :\nhttps://easyinv.onrender.com`);
+                    
+                    // Mark these records as synced
+                    inventoryRecords.forEach((record, index) => {
+                        if (unsyncedRecords.includes(record)) {
+                            syncedRecordIds.add(index);
+                        }
+                    });
+                    
+                    showSyncIndicator(true);
                 } else {
                     const errorText = await response.text();
                     console.error('❌ Erreur:', response.status, errorText);
-                    alert(`❌ Erreur de synchronisation\n\nCode: ${response.status} ${response.statusText}\n\nURL: ${settings.apiEndpoint}\n\n⚠️ Vérifiez que l'URL se termine par /api/inventory`);
+                    showSyncIndicator(false);
                 }
             } catch (error) {
                 console.error('❌ Erreur:', error);
-                alert(`❌ Erreur de connexion\n\n${error.message}\n\nURL configurée:\n${settings.apiEndpoint}\n\n✅ Solution:\n1. Vérifiez l'URL (doit finir par /api/inventory)\n2. Vérifiez que le serveur est en ligne\n3. Testez le dashboard: https://easyinv.onrender.com`);
+                showSyncIndicator(false);
             }
         }
 
