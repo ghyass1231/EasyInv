@@ -535,11 +535,14 @@
             </div>
             <div class="settings-field">
                 <label>URL de l'API</label>
-                <input type="url" id="apiEndpoint" placeholder="https://votre-erp.com/api/inventory">
+                <input type="url" id="apiEndpoint" placeholder="https://easyinv.onrender.com/api/inventory">
+                <div style="font-size: 10px; color: #991b1b; margin-top: 5px;">
+                    ⚠️ Important : L'URL doit se terminer par <strong>/api/inventory</strong>
+                </div>
             </div>
             <div class="settings-field">
                 <label>Clé API (optionnelle)</label>
-                <input type="text" id="apiKey" placeholder="your-api-key-here">
+                <input type="text" id="apiKey" placeholder="dev-only-key">
             </div>
             <div class="checkbox-group">
                 <input type="checkbox" id="autoSync">
@@ -550,10 +553,14 @@
                 <input type="number" id="syncInterval" placeholder="30" min="5" max="300">
             </div>
             <div style="margin-top: 10px; padding: 10px; background: #fef2f2; border-radius: 6px; font-size: 11px; color: #991b1b;">
+                <strong>📋 Configuration correcte :</strong><br>
+                URL : <code>https://easyinv.onrender.com/api/inventory</code><br>
+                <br>
                 <strong>Endpoints disponibles:</strong><br>
-                • POST /inventory - Envoyer les données<br>
-                • GET /inventory - Récupérer les données<br>
-                • GET /status - État de la connexion
+                • POST /api/inventory - Envoyer les données<br>
+                • GET /api/inventory - Récupérer les données<br>
+                • GET /api/stats - État de la connexion<br>
+                • Dashboard : <code>https://easyinv.onrender.com</code>
             </div>
         </div>
 
@@ -1322,6 +1329,9 @@
                     headers['X-API-Key'] = settings.apiKey;
                 }
 
+                console.log('📤 Envoi vers API:', settings.apiEndpoint);
+                console.log('📦 Données:', record);
+
                 const response = await fetch(settings.apiEndpoint, {
                     method: 'POST',
                     headers: headers,
@@ -1333,27 +1343,37 @@
                     })
                 });
 
+                console.log('📡 Réponse API:', response.status, response.statusText);
+
                 if (response.ok) {
-                    console.log('✅ Données envoyées à l\'API:', record);
+                    const result = await response.json();
+                    console.log('✅ Données envoyées à l\'API:', result);
                 } else {
-                    console.error('❌ Erreur API:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.error('❌ Erreur API:', response.status, response.statusText, errorText);
+                    alert(`❌ Erreur API: ${response.status} ${response.statusText}\n\nVérifiez que l'URL est correcte:\n${settings.apiEndpoint}`);
                 }
             } catch (error) {
                 console.error('❌ Erreur connexion API:', error);
+                alert(`❌ Erreur de connexion à l'API:\n${error.message}\n\nURL configurée: ${settings.apiEndpoint}\n\nVérifiez que:\n1. L'URL se termine par /api/inventory\n2. Le serveur est en ligne\n3. CORS est activé sur le serveur`);
             }
         }
 
         // Sync all records to API
         async function syncAllToAPI() {
             if (!settings.apiEnabled || !settings.apiEndpoint) {
-                alert('API non configurée. Activez l\'API dans les paramètres.');
+                alert('❌ API non configurée.\n\nActivez l\'API dans les paramètres et configurez l\'URL :\nhttps://easyinv.onrender.com/api/inventory');
                 return;
             }
 
             if (inventoryRecords.length === 0) {
-                alert('Aucune donnée à synchroniser.');
+                alert('⚠️ Aucune donnée à synchroniser.\n\nScannez des produits d\'abord, puis réessayez.');
                 return;
             }
+
+            console.log('🔄 Début de la synchronisation...');
+            console.log('📡 URL:', settings.apiEndpoint);
+            console.log('📦 Nombre d\'enregistrements:', inventoryRecords.length);
 
             try {
                 const headers = {
@@ -1378,17 +1398,20 @@
                     })
                 });
 
+                console.log('📡 Réponse:', response.status, response.statusText);
+
                 if (response.ok) {
                     const result = await response.json();
                     console.log('✅ Synchronisation réussie:', result);
-                    alert(`✅ ${inventoryRecords.length} enregistrements synchronisés avec succès !`);
+                    alert(`✅ Synchronisation réussie !\n\n${inventoryRecords.length} enregistrement${inventoryRecords.length > 1 ? 's' : ''} envoyé${inventoryRecords.length > 1 ? 's' : ''} à :\n${settings.apiEndpoint}\n\nConsultez le dashboard :\nhttps://easyinv.onrender.com`);
                 } else {
-                    console.error('❌ Erreur API:', response.status);
-                    alert(`❌ Erreur de synchronisation: ${response.status} ${response.statusText}`);
+                    const errorText = await response.text();
+                    console.error('❌ Erreur:', response.status, errorText);
+                    alert(`❌ Erreur de synchronisation\n\nCode: ${response.status} ${response.statusText}\n\nURL: ${settings.apiEndpoint}\n\n⚠️ Vérifiez que l'URL se termine par /api/inventory`);
                 }
             } catch (error) {
-                console.error('❌ Erreur connexion API:', error);
-                alert(`❌ Erreur de connexion: ${error.message}`);
+                console.error('❌ Erreur:', error);
+                alert(`❌ Erreur de connexion\n\n${error.message}\n\nURL configurée:\n${settings.apiEndpoint}\n\n✅ Solution:\n1. Vérifiez l'URL (doit finir par /api/inventory)\n2. Vérifiez que le serveur est en ligne\n3. Testez le dashboard: https://easyinv.onrender.com`);
             }
         }
 
